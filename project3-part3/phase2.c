@@ -10,7 +10,7 @@
 int main()
 {
     int pid1, pid2, pfd[2], fd, ret;
-    if((fd=open("x.txt",O_WRONLY | O_CREAT | O_TRUNC))<0)
+    if((fd=open("x.txt",O_WRONLY | O_CREAT | O_TRUNC,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH))<0)
     {
         printf("File opening error\n");
     }
@@ -66,10 +66,10 @@ int main()
         else
         {
             /*--- Parent continues from here ------*/
-            wait();
             close(pfd[READ]);  // close read end of the pipe
             close(pfd[WRITE]); // close write end of the pipe
             printf("ended");
+            wait();
             return 0;
         }
     }
