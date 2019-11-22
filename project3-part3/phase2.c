@@ -58,7 +58,7 @@ int main()
             dup2(fd, 1);        // overwrite stdout with x.txt
             close(fd);
             close(pfd[READ]);   // close read end of the pipe
-            ret = execlp("cat", "cat", "/etc/passwd", NULL);
+            ret = execlp("grep", "grep", "/var", NULL);
             if (ret == -1)
             {
                 perror("execlp");

@@ -48,7 +48,7 @@ int main()
             close(pfd[WRITE]);  // close write end of the pipe
             dup2(pfd[READ], 0); // // overwrite stdin with pipe
             close(pfd[READ]); // close read end of the pipe
-            ret = execlp("cat", "cat", "/etc/passwd",NULL);
+            ret = execlp("grep", "grep", "/var",NULL);
             if (ret == -1)
             {
                 perror("execlp");
