@@ -2,18 +2,15 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include<sys/types.h>
+#include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>  
+#include <fcntl.h>
 #define READ 0
 #define WRITE 1
 int main()
 {
     int pid1, pid2, pfd[2], fd, ret;
-    if((fd=open("x.txt",O_WRONLY | O_CREAT | O_TRUNC,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH))<0)
-    {
-        printf("File opening error\n");
-    }
+
     if (pipe(pfd) < 0)
     { // create a pipe
         printf("Pipe creation error\n");
@@ -31,7 +28,7 @@ int main()
         close(pfd[READ]);    // close read end of the pipe
         dup2(pfd[WRITE], 1); // overwrite stdout with pipe
         close(pfd[WRITE]);   // close write end of the pipe
-        ret = execlp("cat", "cat" ,"/etc/passwd",NULL);
+        ret = execlp("cat", "cat", "/etc/passwd", NULL);
         if (ret == -1)
         {
             perror("execlp");
@@ -53,13 +50,19 @@ int main()
             printf("<Child2> mypid<%d>  ppid<%d>\n", getpid(), getppid());
             close(pfd[WRITE]);  // close write end of the pipe
             dup2(pfd[READ], 0); // overwrite stdin with pipe
-            dup2(fd,1); // overwrite stdout with x.txt
-            close(pfd[READ]); // close read end of the pipe
-            ret = execlp("cat", "cat", "/etc/passwd",NULL);
+            if ((fd = open("x.txt", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)) < 0)
+            {
+                printf("File opening error\n");
+                exit(1);
+            }
+            dup2(fd, 1);        // overwrite stdout with x.txt
+            close(fd);
+            close(pfd[READ]);   // close read end of the pipe
+            ret = execlp("cat", "cat", "/etc/passwd", NULL);
             if (ret == -1)
             {
                 perror("execlp");
-                exit(1);
+                exit(2);
             }
             exit(0);
         }
@@ -68,8 +71,7 @@ int main()
             /*--- Parent continues from here ------*/
             close(pfd[READ]);  // close read end of the pipe
             close(pfd[WRITE]); // close write end of the pipe
-            printf("ended");
-            wait();
+            wait(); // wait child2 to terminate
             return 0;
         }
     }

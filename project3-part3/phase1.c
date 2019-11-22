@@ -59,10 +59,9 @@ int main()
         else
         {
             /*--- Parent continues from here ------*/
-            wait();
             close(pfd[READ]);  // close read end of the pipe
             close(pfd[WRITE]); // close write end of the pipe
-            printf("ended");
+            wait(); // wait child2 to terminate
             return 0;
         }
     }
